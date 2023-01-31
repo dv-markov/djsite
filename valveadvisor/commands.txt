@@ -1,0 +1,10 @@
+# запуск сервера, нужно находиться в корневом каталоге проекта
+python manage.py runserver
+
+# создание приложения, запускать из главной директории сайта
+python manage.py startapp <app name>
+
+# создание миграции
+python manage.py makemigrations
+
+
