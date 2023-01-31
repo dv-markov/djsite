@@ -6,5 +6,3 @@ python manage.py startapp <app name>
 
 # создание миграции
 python manage.py makemigrations
-
-
