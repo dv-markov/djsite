@@ -1,8 +1,38 @@
+# Работа из консоли
+
+# перейти в папку проекта Python
+cd D:/Python/django/djsite
+
+# создание виртуального окружения
+python -m venv venv
+
+# активоровать виртуальное окружение
+.\venv\Scripts\activate
+
+# деактивировать вирутальное окружение
+deactivate
+
+# установить django
+pip install django
+
+# список команд ядра django
+django-admin
+
+# создание сайта (проекта django):
+django-admin startproject <имя_сайта>
+django-admin startproject coolsite
+
+# перейти в корневой каталог проекта
+cd <имя_сайта>
+cd coolsite
+
 # запуск сервера, нужно находиться в корневом каталоге проекта
 python manage.py runserver
+python manage.py runserver 4000
+python manage.py runserver 192.168.1.1:4000
 
 # создание приложения, запускать из главной директории сайта
-python manage.py startapp <app name>
+python manage.py startapp <app_name>
 
 # создание миграции
 python manage.py makemigrations
