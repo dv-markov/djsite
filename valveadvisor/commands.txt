@@ -36,3 +36,62 @@ python manage.py startapp <app_name>
 
 # создание миграции
 python manage.py makemigrations
+
+# просмотр sql-запроса, который будет выполнен при создании таблицы
+python manage.py sqlmigrate women 0001
+
+# выполнение миграции, создание таблицы в базе данных
+pyhton manage.py migrate
+
+# вход в консоль фреймворка Django
+python manage.py shell
+
+# импорт класса для работы в ORM
+from women.models import Women
+
+# ссылка на объект - результат предыдущего действия
+w1 = _
+
+# сохранение объекта в БД
+w1.save()
+
+# атрибут pk - идентификатор записи; primary key
+w1.pk
+
+# подключение функции connection
+from django.db import connection
+
+# просмотр предыдущего запроса к БД
+connection.queries
+
+# Методы менеджера записей objects
+<class>.objects.create
+Women.objects.create(title='Ума Турман', content = 'Биография Умы Турман')
+
+# выход из оболочки Django shell
+exit()
+
+# чтение записей
+Women.objects.all()
+Women.objects.filter(title='Энн Хэтуэй')
+Women.objects.filter(pk__gte=2)  # pk >= 2
+Women.objects.exclude(pk=2)
+Women.objects.get(pk=2)  # возвращает только одну запись
+# случае, если количество найденных записей > 1, или запись не найдена, метод get генерирует исключение
+# а метод filter возвращает список или пустой список
+
+# выбор записи с сортировкой
+Women.objects.filter(pk__lte=4).order_by('title')
+Women.objects.order_by('-time_update')  # обратный порядок сортировки
+
+# изменение существующих записей
+wu = Women.objects.get(pk=2)
+wu.title = 'Марго Робби'
+wu.content = 'Биография Марго Робби'
+
+# удаление записей
+wd = Women.objects.filter(pk__gte=4)
+wd.delete()
+
+
+

@@ -16,7 +16,7 @@ def categories(request, catid):
 
 
 def archive(request, year):
-    if int(year) > 2020:
+    if int(year) > 2022:
         #  raise Http404()
         # return redirect('/')  # временный редирект для перенаправления с кодом 302
         return redirect('home', permanent=True)  # постоянный редирект,
