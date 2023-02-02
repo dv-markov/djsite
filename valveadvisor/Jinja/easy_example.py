@@ -20,3 +20,9 @@ tm = Template("Мне {{ p.age }} лет и меня зовут {{ p.name }} �
 msg = tm.render(p=per)
 
 print(msg)
+
+
+pp = {'name': 'Ivan', 'age': 34}
+tm = Template("А меня зовут {{ p.name }}, мне {{ p.age }} 😎")
+msg = tm.render(p=pp)
+print(msg)
