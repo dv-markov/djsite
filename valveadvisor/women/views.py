@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
+from django.shortcuts import render, redirect
+# render - встроенный шаблонизатор Django
 
 
 def index(request):  # HttpRequest
-    return HttpResponse("Страница приложения women.")
+    # return HttpResponse("Страница приложения women.")
+
+    return render(request, )
 
 
 def categories(request, catid):
