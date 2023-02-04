@@ -1,8 +1,8 @@
-from django.db import models
-
 # Create your models here
 # здесь сохраняются все классы моделей приложения
 # пакет models содержит базовые классы моделей, на основании которых можно создавать свои модели таблиц баз данных
+from django.db import models
+from django.urls import reverse
 
 
 class Women(models.Model):
@@ -18,6 +18,9 @@ class Women(models.Model):
     def __str__(self):
         return f"{self.title}, id:{self.pk}"
 
+    # более предпочтительный подход для ссылок, связанных с базой данных
+    def get_absolute_url(self):
+        return reverse('post', kwargs={'post_id': self.pk})
 
 # Создание таблицы в базе данных на основе модели.
 # Для этого в Джанго существует механизм создания и выполнения миграций для баз данных.

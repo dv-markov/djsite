@@ -93,5 +93,9 @@ wu.content = 'Биография Марго Робби'
 wd = Women.objects.filter(pk__gte=4)
 wd.delete()
 
+# Lesson #7
+# Сбор статических файлов перед деплоем
+python manage.py collecstatic
+
 
 
