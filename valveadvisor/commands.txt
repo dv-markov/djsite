@@ -97,5 +97,18 @@ wd.delete()
 # Сбор статических файлов перед деплоем
 python manage.py collecstatic
 
+# Lesson 9
+# создание категорий и обновление полей категория в моделях women
+from women.models import *
+Category.objects.create(name='Актрисы')
+Category.objects.create(name='Певицы')
+w_list = Women.objects.all()
+w_list.update(cat_id=1)
 
+# Lesson 10
+# Administraion panel
+python manage.py createsuperuser
+root
+root@valveadvisor.ru
+1234
 
