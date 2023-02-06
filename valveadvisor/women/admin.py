@@ -9,7 +9,7 @@ class WomenAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'time_create', 'photo', 'is_published')
     # кликабельные поля
     list_display_links = ('id', 'title')
-    # по каким полям можно производсдить поиск.
+    # по каким полям можно производить поиск.
     search_fields = ('title', 'content')
     list_editable = ('is_published',)
     list_filter = ('is_published', 'time_create')

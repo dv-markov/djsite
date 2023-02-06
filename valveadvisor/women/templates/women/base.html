@@ -1,4 +1,5 @@
 {% load static %}
+{% load women_tags %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -33,19 +34,30 @@
 <tr>
 <!-- Sidebar слева -->
 	<td valign="top" class="left-chapters">
+
+        {# вызов простого пользовательского тега, помещение резуотатов в переменную #}
+        {# {% getcats as categories %}#}
+
+        {# передача параметра #}
+{#        {% getcats filter=1 %}#}
+        {# эквивалент #}
+{#        {% getcats 2 %}#}
+
 	<ul id="leftchapters">
         {% if cat_selected == 0 %}
             <li class="selected">Все категории</li>
         {% else %}
             <li><a href="{% url 'home' %}">Все категории</a></li>
         {% endif %}
-        {%  for c in cats %}
-            {% if c.pk == cat_selected %}
-                <li class="selected">{{ c.name }}</li>
-            {% else %}
-                <li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
-            {% endif %}
-        {% endfor %}
+
+{#        вызов тега без аргументов#}
+{#        {% show_categories %}#}
+
+{#        вызов тега с аргументами#}
+{#        {% show_categories '-name' cat_selected %}#}
+
+{#        без сортировки#}
+        {% show_categories cat_selected=cat_selected %}
 
 		<li class="share">
 		<p>Наш канал</p>
