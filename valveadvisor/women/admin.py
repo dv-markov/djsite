@@ -13,6 +13,7 @@ class WomenAdmin(admin.ModelAdmin):
     search_fields = ('title', 'content')
     list_editable = ('is_published',)
     list_filter = ('is_published', 'time_create')
+    # автоматическое формирование слага
     prepopulated_fields = {"slug": ("title",)}
 
 
