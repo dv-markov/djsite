@@ -83,6 +83,7 @@ class AddPage(CreateView):
         context['menu'] = menu
         return context
 
+
 def contact(request):
     return HttpResponse("Обратная связь")
 
@@ -104,8 +105,7 @@ def login(request):
 #     }
 #
 #     return render(request, 'women/post.html', context=context)
-
-
+# Обработка представления через DetailView
 class ShowPost(DetailView):
     model = Women
     template_name = 'women/post.html'
