@@ -16,7 +16,8 @@ class Women(models.Model):
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения")
     is_published = models.BooleanField(default=True, verbose_name="Публикация")
     # если класс категорий прописан ниже текущего класса, его имя надо указывать в кавычках.
-    cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Категория")
+    # related_name - переменная для замены функционала <вторичная_модель>_set
+    cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Категория")  # related_name='get_posts'
 
     def __str__(self):
         return f"{self.title}, id:{self.pk}"

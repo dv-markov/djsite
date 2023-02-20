@@ -112,3 +112,90 @@ root
 root@valveadvisor.ru
 1234
 
+# Lesson 16 - Работа с БД, ORM
+from women.models import *
+
+# срез - * SELECT * *
+Women.objects.all()[3:8]
+
+# сортировка - * ORDER BY *
+Women.objects.order_by('pk')
+# обратная сортировка
+Women.objects.order_by('-pk')
+Women.objects.all().reverse()
+
+# первичный ключ меньше или равен 2 - * WHERE *
+Women.objects.filter(pk__lte=2)
+
+# обработка данных связанных таблиц
+w = Women.objects.get(pk=1)
+w.cat  # ссылка на объект категории
+
+# Первичные модели
+# У любой первичной модели создается специальное свойство для каждой вторичной модели: <вторичная_модель>_set
+# С помощью этого объекта можно выбирать все связанные записи
+c = Category.objects.get(pk=1)
+c.women_set
+c.women_set.all()
+
+# Фильтры полей - lookups - * WHERE, LIKE, iLIKE *
+__gt, __gte - больше
+--lt, __gte - меньше
+__contains - содержит
+__icontains - содержит без учета регистра (не работает для не-ASCII символов в SQLite)
+
+__in - значение в списке, Women.objects.filter(pk__in=[2,5,11,12])
+Women.objects.filter(pk__in=[2,5,11], is_published=True) - объединение, И
+Women.objects.filter(cat__in=[1,2]) - __in по вшешнему ключу
+Women.objects.filter(cat_id__in=[1,2])
+cats = Category.objects.all()
+Women.objects.filter(cat__in=cats)
+
+# Класс Q - * AND, OR, NOT *
+# & - лоигическое И (приоритет 2)
+# | - логическое ИЛИ (приоритет 3)
+# ~ - логическое НЕ (приоритет 1)
+from django.db.models import Q
+Women.objects.filter(Q(pk__lt=5) | Q(cat_id=2))
+Women.objects.filter(~Q(pk__lt=5) &  Q(cat_id=2))
+
+# Быстрое получение записей из таблицы - * FIRST, LAST *
+Women.objects.first()
+Women.objects.order_by('pk').last()
+
+# Записи по дате - * DATE, TIME *
+Women.objects.latest('time_update')
+Women.objects.earliest('time_update')
+
+# Предыдущуя или следующая запись
+w = Women.objects.get(pk=7)
+w.get_previous_by_time_update()
+w.get_next_by_time_update()
+w.get_next_by_time_update(pk__gt=10)
+
+# проверка существования и получение числа записей, работают быстро
+c3 = Category.objects.get(pk=3)
+c3.women_set.exists()
+c3.women_set.count()
+Women.objects.filter(pk__gt=4).count()
+
+# обращение к первичной модели через атрибут * INNER JOIN *
+Women.objects.filter(cat__slug='aktrisy')
+Women.objects.filter(cat__in=[1])  # эквивалент
+Women.objects.filter(cat__name='Певицы')  # эквивалент
+Women.objects.filter(cat__name__contains='цы')
+# Обратное соответствие
+Category.objects.filter(women__title__contains='ли')
+# Убрать дубликаты
+Category.objects.filter(women__title__contains='ли').distinct()
+
+# Aggregation functions
+from django.db.models import *
+Women.objects.aggregate(Min('cat_id'))
+Women.objects.aggregate(Min('cat_id'), Max('cat_id'))
+Women.objects.aggregate(cat_min=Min('cat_id'), cat_max=Max('cat_id'))
+Women.objects.filter(pk__gt=4).aggregate(res=Avg('cat_id'))
+
+# Выбор записи и конкретных ее полей - этот метод работает быстрее
+Women.objects.values('title', 'cat_id').get(pk=1)
+Women.objects.values('title', 'cat__name').get(pk=1)
