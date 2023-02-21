@@ -199,3 +199,48 @@ Women.objects.filter(pk__gt=4).aggregate(res=Avg('cat_id'))
 # Выбор записи и конкретных ее полей - этот метод работает быстрее
 Women.objects.values('title', 'cat_id').get(pk=1)
 Women.objects.values('title', 'cat__name').get(pk=1)
+
+
+# Очистка экрана
+import os
+os.system('cls')  # windows
+os.system('clear')  # linux
+
+# Группировка записей, метод annotate (Аггрегирующая функция) - для задания дополнительного поля, вычисляющего указанное значение
+Women.objects.values('cat_id').annotate(Count('id'))  # для вторичной модели
+# для первичной модели
+c = Category.objects.annotate(Count('women'))
+c[0].women__count
+c = Category.objects.annotate(total=Count('women'))
+c[0].total
+Category.objects.annotate(total=Count('women')).filter(total__gt=0)
+
+# Класс F - для вычисления значений, записанных в поле. Безопасный способ работы с данными в БД
+from django.db.models import F
+Women.objects.filter(pk__lte=F('cat_id'))
+Women.objects.filter(slug='bejonse').update(views=F('views')+1)  # часто используется на практике для увеличения числа просмотров
+
+# Функции БД (Database functions) - для выполнения вычислений в БД, более эффективный подход
+from django.db.models.functions import Length
+ps = Women.objects.annotate(len=Length('title'))
+for item in ps:
+    print(item.title, item.len)
+
+
+# Raw-SQL запросы (необходимость их использования возникает крайне редко)
+Women.objects.raw('SELECT * FROM women_women')
+# Ленивое исполнение запросов
+from django.db import reset_queries
+reset_queries()
+w = Women.objects.raw('SELECT id, title FROM women_women')
+w[0].is_published
+connection.queries
+# Механизм отложенной загрузки полей - Данные загружаются из БД только в момент обращения, плохая практика для большого кол-ва запросов
+
+
+# Передача параметров в SQL-запрос
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='shakira'")
+slug='shakira'
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='" + slug + "'")  # опасно для атак SQL-инъекциями
+# защищенный вариант:
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='%s'", [slug])
