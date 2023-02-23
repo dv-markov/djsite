@@ -244,3 +244,17 @@ slug='shakira'
 Women.objects.raw("SELECT id, title FROM women_women WHERE slug='" + slug + "'")  # опасно для атак SQL-инъекциями
 # защищенный вариант:
 Women.objects.raw("SELECT id, title FROM women_women WHERE slug='%s'", [slug])
+
+
+# Lesson 18 - Pagination
+p = Paginator(lst, 3)  # создание объекта класса Paginator
+p.count  # количество элементов списка
+p.num.pages  # количество страниц
+p.page_range  # итератор (объект range) из всех страниц
+p1 = p.page(1)  # получаем доступ к первой странице
+p1.object_list  # список элементов на первой странице
+p1.has_next()  # наличие следующей страницы
+p1.has_previous()  # наличие предыдущей страницы
+p1.has_other_pages()  # наличие других страниц
+p1.next_page_number()  # номер следующей стр.
+p1.previous_page_number()  # номер пред. стр.

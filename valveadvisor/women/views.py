@@ -1,16 +1,15 @@
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 # render - встроенный шаблонизатор Django
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .forms import *
 from .models import *
-
-
-menu = [{'title': "О сайте", 'url_name': 'about'},
-        {'title': "Добавить статью", 'url_name': 'add_page'},
-        {'title': "Обратная связь", 'url_name': 'contact'},
-        {'title': "Войти", 'url_name': 'login'}]
+from .utils import *
 
 
 # Представление главной страницы в виде функции
@@ -27,7 +26,29 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
 
 
 # Представление главной страницы в виде класса ListView
-class WomenHome(ListView):
+# class WomenHome(ListView):
+#     model = Women
+#     template_name = 'women/index.html'
+#     context_object_name = 'posts'
+#     # параметр для передачи статических (неизменяемых) значений, не подходит для списков
+#     # extra_context = {'title': 'Главная страница'}
+#
+#     # второй вариант передачи дополнительных данных в шаблон - функция get_context_data
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         # сначала получаем текущий контекст
+#         context = super().get_context_data(**kwargs)
+#         context['menu'] = menu
+#         context['title'] = 'Главная страница'
+#         context['cat_selected'] = 0
+#         return context
+#
+#     def get_queryset(self):
+#         return Women.objects.filter(is_published=True)
+
+
+# Использование миксинов
+class WomenHome(DataMixin, ListView):
+    # paginate_by = 3  # переменная пагинатора для указания количества элементов на одной странице, перенесена в DataMixin
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -36,21 +57,30 @@ class WomenHome(ListView):
 
     # второй вариант передачи дополнительных данных в шаблон - функция get_context_data
     def get_context_data(self, *, object_list=None, **kwargs):
-        # сначала получаем текущий контекст
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Главная страница'
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context(title="Главная страница")
+        # return dict(list(context.items()) + list(c_def.items()))
+        return context | c_def
 
     def get_queryset(self):
         return Women.objects.filter(is_published=True)
 
 
+# @login_required  # для функций представления используются декораторы, для классов - миксины
 def about(request):
-    return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
+    # Класс Paginator в функциях-представлениях
+    contact_list = Women.objects.all()
+    paginator = Paginator(contact_list, 3)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'women/about.html', {'page_obj': page_obj, 'menu': menu, 'title': 'О сайте'})
+
+    # return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
 
 
+# Функция
 # def addpage(request):
 #     if request.method == 'POST':
 #         form = AddPostForm(request.POST, request.FILES)
@@ -71,17 +101,37 @@ def about(request):
 #     else:
 #         form = AddPostForm()
 #     return render(request, 'women/addpage.html', {'form': form, 'menu': menu, 'title': "Добавление статьи"})
-class AddPage(CreateView):
+
+
+# Класс CreateView
+# class AddPage(CreateView):
+#     form_class = AddPostForm
+#     template_name = 'women/addpage.html'
+#     # адрес для перенаправления после создания
+#     success_url = reverse_lazy('home')
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = 'Добавление статьи'
+#         context['menu'] = menu
+#         return context
+
+
+# Миксин
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddPostForm
     template_name = 'women/addpage.html'
     # адрес для перенаправления после создания
     success_url = reverse_lazy('home')
+    # login_url = '/admin/'
+    login_url = reverse_lazy('home')
+    raise_exception = True  # отображение 403 вместо перенаправления
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Добавление статьи'
-        context['menu'] = menu
-        return context
+        c_def = self.get_user_context(title='Добавление статьи', cat_selected=None)
+        # return dict(list(context.items()) + list(c_def.items()))
+        return context | c_def
 
 
 def contact(request):
@@ -105,8 +155,27 @@ def login(request):
 #     }
 #
 #     return render(request, 'women/post.html', context=context)
+
+
 # Обработка представления через DetailView
-class ShowPost(DetailView):
+# class ShowPost(DetailView):
+#     model = Women
+#     template_name = 'women/post.html'
+#     # замена стандартного пути обращения к слагу ('slug') на тот, который прописан в маршруте ('post_slug')
+#     slug_url_kwarg = 'post_slug'
+#     # имя специальной переменной для замены пути обращения по id, значение по умолчанию 'pk'
+#     # pk_url_kwarg = 'pk'
+#     context_object_name = 'post'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = context['post']
+#         context['menu'] = menu
+#         return context
+
+
+# Обработка представления через миксин
+class ShowPost(DataMixin, DetailView):
     model = Women
     template_name = 'women/post.html'
     # замена стандартного пути обращения к слагу ('slug') на тот, который прописан в маршруте ('post_slug')
@@ -117,10 +186,8 @@ class ShowPost(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = context['post']
-        context['menu'] = menu
-        return context
-
+        c_def = self.get_user_context(title=context['post'], cat_selected=None)
+        return context | c_def
 
 # отображение через функцию
 # def show_category(request, cat_slug):
@@ -142,7 +209,25 @@ class ShowPost(DetailView):
 
 
 # отображение через класс
-class WomenCategory(ListView):
+# class WomenCategory(ListView):
+#     model = Women
+#     template_name = 'women/index.html'
+#     context_object_name = 'posts'
+#     allow_empty = False
+#
+#     def get_queryset(self):
+#         return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+#
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = 'Категория - ' + str(context['posts'][0].cat)
+#         context['menu'] = menu
+#         context['cat_selected'] = context['posts'][0].cat_id
+#         return context
+
+
+# Отображение с использованием миксина
+class WomenCategory(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -153,10 +238,9 @@ class WomenCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Категория - ' + str(context['posts'][0].cat)
-        context['menu'] = menu
-        context['cat_selected'] = context['posts'][0].cat_id
-        return context
+        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
+                                      cat_selected=context['posts'][0].cat_id)
+        return context | c_def
 
 
 # пример простейшей реализации представления
