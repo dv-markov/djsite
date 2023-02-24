@@ -1,0 +1,12 @@
+Why Pycharm does not detect static files in the development mode of the Django project?
+There could be a few reasons why PyCharm is not detecting static files in the development mode of a Django project:
+
+Incorrect static files settings: Ensure that the static files settings in the settings.py file are correctly configured, including the STATIC_ROOT and STATIC_URL values.
+
+Static files not being served in development mode: By default, Django does not serve static files in the development mode for security reasons. You need to configure your development server to serve the static files.
+
+Incorrect file path: Make sure that the static files are stored in the correct location, specified in the STATICFILES_DIRS setting in the settings.py file.
+
+Incorrect URL pattern: Ensure that the URL pattern for serving static files is included in your project's urls.py file.
+
+If you've checked these things and are still having trouble, it may be helpful to provide more information about your project, including your Django version and the exact error messages you are encountering.

@@ -3,17 +3,31 @@
 {% block content %}
 <ul class="list-articles">
 	{% for p in posts %}
-			<li><h2>{{p.title}}</h2>
+			<li>
+                <div class="article-panel">
+                    <p class="first">Категория: {{ p.cat }}</p>
+                    <p class="last">Дата: {{ p.time_update|date:"d-m-Y H:i:s" }}</p>
+                </div>
+                {# Отображение превью фото #}
+                {% if p.photo %}
+                    <p><img class="img-article-left thumb" src="{{ p.photo.url }}"></p>
+                {% endif %}
+                <h2>{{p.title}}</h2>
 {% comment %}
-	{% autoescape on %}
+	{% autoescape off %}
 	{{p.content|linebreaks|truncatewords:50}}
 	{% endautoescape %}
 {% endcomment %}
-				{% autoescape on %}
+				{% autoescape on %} {# значение по умолчанию on #}
 				<p>{{ p.content|linebreaks|truncatewords:50 }}</p>
 				{% endautoescape %}
 			<div class="clear"></div>
-			<p class="link-read-post"><a href="#">Читать пост</a></p>
+            {# Первый вариант формирования динамических url-адресов, через ссылку на primary key объекта: #}
+			{# <p class="link-read-post"><a href="{% url 'post' p.pk %}">Читать пост</a></p> #}
+            {# Второй вариант - через функцию формирования адреса в классе модели #}
+            {# более предпочтительный подход для ссылок, связанных с базой данных #}
+            {# get_absolute_url - функция получения адреса в соответствии с конвенцией Django#}
+            <p class="link-read-post"><a href="{{ p.get_absolute_url }}">Читать пост</a></p>
 			</li>
 	{% endfor %}
 </ul>

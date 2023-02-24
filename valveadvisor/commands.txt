@@ -93,5 +93,168 @@ wu.content = 'Биография Марго Робби'
 wd = Women.objects.filter(pk__gte=4)
 wd.delete()
 
+# Lesson #7
+# Сбор статических файлов перед деплоем
+python manage.py collecstatic
+
+# Lesson 9
+# создание категорий и обновление полей категория в моделях women
+from women.models import *
+Category.objects.create(name='Актрисы')
+Category.objects.create(name='Певицы')
+w_list = Women.objects.all()
+w_list.update(cat_id=1)
+
+# Lesson 10
+# Administraion panel
+python manage.py createsuperuser
+root
+root@valveadvisor.ru
+1234
+
+# Lesson 16 - Работа с БД, ORM
+from women.models import *
+
+# срез - * SELECT * *
+Women.objects.all()[3:8]
+
+# сортировка - * ORDER BY *
+Women.objects.order_by('pk')
+# обратная сортировка
+Women.objects.order_by('-pk')
+Women.objects.all().reverse()
+
+# первичный ключ меньше или равен 2 - * WHERE *
+Women.objects.filter(pk__lte=2)
+
+# обработка данных связанных таблиц
+w = Women.objects.get(pk=1)
+w.cat  # ссылка на объект категории
+
+# Первичные модели
+# У любой первичной модели создается специальное свойство для каждой вторичной модели: <вторичная_модель>_set
+# С помощью этого объекта можно выбирать все связанные записи
+c = Category.objects.get(pk=1)
+c.women_set
+c.women_set.all()
+
+# Фильтры полей - lookups - * WHERE, LIKE, iLIKE *
+__gt, __gte - больше
+--lt, __gte - меньше
+__contains - содержит
+__icontains - содержит без учета регистра (не работает для не-ASCII символов в SQLite)
+
+__in - значение в списке, Women.objects.filter(pk__in=[2,5,11,12])
+Women.objects.filter(pk__in=[2,5,11], is_published=True) - объединение, И
+Women.objects.filter(cat__in=[1,2]) - __in по вшешнему ключу
+Women.objects.filter(cat_id__in=[1,2])
+cats = Category.objects.all()
+Women.objects.filter(cat__in=cats)
+
+# Класс Q - * AND, OR, NOT *
+# & - лоигическое И (приоритет 2)
+# | - логическое ИЛИ (приоритет 3)
+# ~ - логическое НЕ (приоритет 1)
+from django.db.models import Q
+Women.objects.filter(Q(pk__lt=5) | Q(cat_id=2))
+Women.objects.filter(~Q(pk__lt=5) &  Q(cat_id=2))
+
+# Быстрое получение записей из таблицы - * FIRST, LAST *
+Women.objects.first()
+Women.objects.order_by('pk').last()
+
+# Записи по дате - * DATE, TIME *
+Women.objects.latest('time_update')
+Women.objects.earliest('time_update')
+
+# Предыдущуя или следующая запись
+w = Women.objects.get(pk=7)
+w.get_previous_by_time_update()
+w.get_next_by_time_update()
+w.get_next_by_time_update(pk__gt=10)
+
+# проверка существования и получение числа записей, работают быстро
+c3 = Category.objects.get(pk=3)
+c3.women_set.exists()
+c3.women_set.count()
+Women.objects.filter(pk__gt=4).count()
+
+# обращение к первичной модели через атрибут * INNER JOIN *
+Women.objects.filter(cat__slug='aktrisy')
+Women.objects.filter(cat__in=[1])  # эквивалент
+Women.objects.filter(cat__name='Певицы')  # эквивалент
+Women.objects.filter(cat__name__contains='цы')
+# Обратное соответствие
+Category.objects.filter(women__title__contains='ли')
+# Убрать дубликаты
+Category.objects.filter(women__title__contains='ли').distinct()
+
+# Aggregation functions
+from django.db.models import *
+Women.objects.aggregate(Min('cat_id'))
+Women.objects.aggregate(Min('cat_id'), Max('cat_id'))
+Women.objects.aggregate(cat_min=Min('cat_id'), cat_max=Max('cat_id'))
+Women.objects.filter(pk__gt=4).aggregate(res=Avg('cat_id'))
+
+# Выбор записи и конкретных ее полей - этот метод работает быстрее
+Women.objects.values('title', 'cat_id').get(pk=1)
+Women.objects.values('title', 'cat__name').get(pk=1)
 
 
+# Очистка экрана
+import os
+os.system('cls')  # windows
+os.system('clear')  # linux
+
+# Группировка записей, метод annotate (Аггрегирующая функция) - для задания дополнительного поля, вычисляющего указанное значение
+Women.objects.values('cat_id').annotate(Count('id'))  # для вторичной модели
+# для первичной модели
+c = Category.objects.annotate(Count('women'))
+c[0].women__count
+c = Category.objects.annotate(total=Count('women'))
+c[0].total
+Category.objects.annotate(total=Count('women')).filter(total__gt=0)
+
+# Класс F - для вычисления значений, записанных в поле. Безопасный способ работы с данными в БД
+from django.db.models import F
+Women.objects.filter(pk__lte=F('cat_id'))
+Women.objects.filter(slug='bejonse').update(views=F('views')+1)  # часто используется на практике для увеличения числа просмотров
+
+# Функции БД (Database functions) - для выполнения вычислений в БД, более эффективный подход
+from django.db.models.functions import Length
+ps = Women.objects.annotate(len=Length('title'))
+for item in ps:
+    print(item.title, item.len)
+
+
+# Raw-SQL запросы (необходимость их использования возникает крайне редко)
+Women.objects.raw('SELECT * FROM women_women')
+# Ленивое исполнение запросов
+from django.db import reset_queries
+reset_queries()
+w = Women.objects.raw('SELECT id, title FROM women_women')
+w[0].is_published
+connection.queries
+# Механизм отложенной загрузки полей - Данные загружаются из БД только в момент обращения, плохая практика для большого кол-ва запросов
+
+
+# Передача параметров в SQL-запрос
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='shakira'")
+slug='shakira'
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='" + slug + "'")  # опасно для атак SQL-инъекциями
+# защищенный вариант:
+Women.objects.raw("SELECT id, title FROM women_women WHERE slug='%s'", [slug])
+
+
+# Lesson 18 - Pagination
+p = Paginator(lst, 3)  # создание объекта класса Paginator
+p.count  # количество элементов списка
+p.num.pages  # количество страниц
+p.page_range  # итератор (объект range) из всех страниц
+p1 = p.page(1)  # получаем доступ к первой странице
+p1.object_list  # список элементов на первой странице
+p1.has_next()  # наличие следующей страницы
+p1.has_previous()  # наличие предыдущей страницы
+p1.has_other_pages()  # наличие других страниц
+p1.next_page_number()  # номер следующей стр.
+p1.previous_page_number()  # номер пред. стр.

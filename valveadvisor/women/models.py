@@ -1,22 +1,68 @@
-from django.db import models
-
 # Create your models here
 # здесь сохраняются все классы моделей приложения
 # пакет models содержит базовые классы моделей, на основании которых можно создавать свои модели таблиц баз данных
+from django.db import models
+from django.urls import reverse
 
 
 class Women(models.Model):
     # Поле id уже прописано в классе Model,
     # описание доступных типов полей класса см. в документации: djbook.ru
-    title = models.CharField(max_length=255)
-    content = models.TextField(blank=True)
-    photo = models.ImageField(upload_to="photos/%Y/%m/%d/")
-    time_create = models.DateTimeField(auto_now_add=True)
-    time_update = models.DateTimeField(auto_now=True)
-    is_published = models.BooleanField(default=True)
+    title = models.CharField(max_length=255, verbose_name="Заголовок")
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+    content = models.TextField(blank=True, verbose_name="Текст статьи")
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", verbose_name="Фото")
+    time_create = models.DateTimeField(auto_now_add=True, verbose_name="Время создания")
+    time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения")
+    is_published = models.BooleanField(default=True, verbose_name="Публикация")
+    # если класс категорий прописан ниже текущего класса, его имя надо указывать в кавычках.
+    # related_name - переменная для замены функционала <вторичная_модель>_set
+    cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Категория")  # related_name='get_posts'
 
     def __str__(self):
         return f"{self.title}, id:{self.pk}"
+
+    # более предпочтительный подход для ссылок, связанных с базой данных
+    def get_absolute_url(self):
+        return reverse('post', kwargs={'post_slug': self.slug})
+
+    # Дочерний класс для отображения класса в админ-панели
+    class Meta:
+        verbose_name = "Известные женщины"
+        verbose_name_plural = "Известные женщины"
+        # обратная сортировка - добавить минус
+        # эта сортировка работает не только в админ-панели, но и везде, где перечисляются объекты этого класса
+        # ordering = ['-time_create', 'title']
+        ordering = ['id']
+
+
+# Встроенные классы Django для связи моделей:
+# ForeignKey - для связей Many to One (поля отношений)
+# ManyToManyField - для связей Many to Many (многие ко многим)
+# OneToOneField - для связей One to One (один к одному)
+
+# https://docs.djangoproject.com/en/4.1/topics/db/models/#relationships
+# ForeignKey(<ссылка на первичную модель>, on_delete=<ограничения при удалении>)
+# Первичная модель - модель категорий
+class Category(models.Model):
+    name = models.CharField(max_length=100, db_index=True, verbose_name='Категория')
+    slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+
+    def __str__(self):
+        return self.name
+
+    # def get_absolute_url(self):
+    #     return reverse('category', kwargs={'cat_id': self.pk})
+
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'cat_slug': self.slug})
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        # обратная сортировка - добавить минус
+        # эта сортировка работает не только в админ-панели, но и везде, где перечисляются объекты этого класса
+        ordering = ['id']
 
 
 # Создание таблицы в базе данных на основе модели.
