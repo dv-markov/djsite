@@ -20,7 +20,8 @@ class Women(models.Model):
     cat = models.ForeignKey('Category', on_delete=models.PROTECT, verbose_name="Категория")  # related_name='get_posts'
 
     def __str__(self):
-        return f"{self.title}, id:{self.pk}"
+        # return f"{self.title}, id:{self.pk}"
+        return f"{self.title}"
 
     # более предпочтительный подход для ссылок, связанных с базой данных
     def get_absolute_url(self):

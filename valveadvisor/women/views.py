@@ -1,3 +1,4 @@
+from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.forms import AuthenticationForm
@@ -294,6 +295,12 @@ class RegisterUser(DataMixin, CreateView):
         c_def = self.get_user_context(title='Регистрация')
         return context | c_def
 
+    # метод вызывается при успешной проверке формы регистрации
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
 
 class LoginUser(DataMixin, LoginView):
     # стандартная форма авторизации
@@ -312,3 +319,7 @@ class LoginUser(DataMixin, LoginView):
     def get_success_url(self):
         return reverse_lazy('home')
 
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
