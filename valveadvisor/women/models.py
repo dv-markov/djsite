@@ -33,8 +33,8 @@ class Women(models.Model):
         verbose_name_plural = "Известные женщины"
         # обратная сортировка - добавить минус
         # эта сортировка работает не только в админ-панели, но и везде, где перечисляются объекты этого класса
-        # ordering = ['-time_create', 'title']
-        ordering = ['id']
+        ordering = ['-time_create', 'title']
+        # ordering = ['id']
 
 
 # Встроенные классы Django для связи моделей:

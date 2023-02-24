@@ -259,3 +259,8 @@ p1.has_previous()  # наличие предыдущей страницы
 p1.has_other_pages()  # наличие других страниц
 p1.next_page_number()  # номер следующей стр.
 p1.previous_page_number()  # номер пред. стр.
+
+
+# Lesson 21 - Django Debug Toolbar
+select_related(key)  # "жадная" загрузка связанных данных по внешнему ключу key, который имеет тип ForeignKey (One To Many)
+prefetch_related(key)  # "жадная" загрузка связанных данных по внешнему ключу key, который имеет тип ManyToManyField
