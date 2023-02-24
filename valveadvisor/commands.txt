@@ -8,6 +8,7 @@ python -m venv venv
 
 # активоровать виртуальное окружение
 .\venv\Scripts\activate
+e:/_ARCHIVE/YADISK/Python/WEB_TECHNOLOGIES/django-selfedu/djsite/.venv/Scripts/Activate.ps1
 
 # деактивировать вирутальное окружение
 deactivate
