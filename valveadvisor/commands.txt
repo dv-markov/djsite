@@ -265,3 +265,13 @@ p1.previous_page_number()  # номер пред. стр.
 # Lesson 21 - Django Debug Toolbar
 select_related(key)  # "жадная" загрузка связанных данных по внешнему ключу key, который имеет тип ForeignKey (One To Many)
 prefetch_related(key)  # "жадная" загрузка связанных данных по внешнему ключу key, который имеет тип ManyToManyField
+
+# Lesson 22 - Caching
+# The low-level cache API
+# https://docs.djangoproject.com/en/4.1/topics/cache/#the-low-level-cache-api
+cache.set()  # сохранение произвольных данных по ключу
+cache.get()  # выбор произвольных данных из кэша по ключу
+cache.add()  # заносит новое значение в кэш, если его еще там нет (иначе игнорируется)
+cache.get_or_set()  # извлекает данные из кэша, если их нет, то заносит значения по умолчанию
+cache.delete()  # удаление данных из кэша по ключу
+cache.clear()  # полная очистка кэша

@@ -1,12 +1,12 @@
 from django.contrib.auth import logout, login
-from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.decorators import login_required
 # from django.contrib.auth.forms import UserCreationForm
 # from django.contrib.auth.forms import AuthenticationForm
+# from django.core.paginator import Paginator
 from django.contrib.auth.views import LoginView
-from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, redirect, get_object_or_404
 # render - встроенный шаблонизатор Django
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -52,7 +52,8 @@ from .utils import *
 
 # Использование миксинов
 class WomenHome(DataMixin, ListView):
-    # paginate_by = 3  # переменная пагинатора для указания количества элементов на одной странице, перенесена в DataMixin
+    # переменная пагинатора для указания количества элементов на одной странице, перенесена в DataMixin
+    # paginate_by = 3
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -71,7 +72,7 @@ class WomenHome(DataMixin, ListView):
         return Women.objects.filter(is_published=True).select_related('cat')
 
 
-# @login_required  # для функций представления используются декораторы, для классов - миксины
+# @login_required # для функций представления используются декораторы, для классов - миксины
 def about(request):
     # Класс Paginator в функциях-представлениях
     # contact_list = Women.objects.all()
@@ -143,10 +144,6 @@ def contact(request):
     return HttpResponse("Обратная связь")
 
 
-# def login(request):
-#     return HttpResponse("Авторизация")
-
-
 # обработка представления через функцию
 # def show_post(request, post_slug):
 #     # return HttpResponse(f"Отображение статьи с id = {post_id}")
@@ -183,8 +180,8 @@ def contact(request):
 class ShowPost(DataMixin, DetailView):
     model = Women
     template_name = 'women/post.html'
-    # замена стандартного пути обращения к слагу ('slug') на тот, который прописан в маршруте ('post_slug')
     slug_url_kwarg = 'post_slug'
+    # замена стандартного пути обращения к слагу ('slug') на тот, который прописан в маршруте ('post_slug')
     # имя специальной переменной для замены пути обращения по id, значение по умолчанию 'pk'
     # pk_url_kwarg = 'pk'
     context_object_name = 'post'
@@ -305,6 +302,10 @@ class RegisterUser(DataMixin, CreateView):
         user = form.save()
         login(self.request, user)
         return redirect('home')
+
+
+# def login(request):
+#     return HttpResponse("Авторизация")
 
 
 class LoginUser(DataMixin, LoginView):

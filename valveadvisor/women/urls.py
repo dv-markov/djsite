@@ -1,9 +1,11 @@
 from django.urls import path, re_path
+from django.views.decorators.cache import cache_page
 
 from .views import *
 
 urlpatterns = [
-    path('', WomenHome.as_view(), name='home'),  # http://127.0.0.1:8000/
+    # path('', cache_page(60)(WomenHome.as_view()), name='home'),  # 1-й способ кэширования, через cache_page для класса
+    path('', WomenHome.as_view(), name='home'),
     path('about/', about, name='about'),
     path('addpage/', AddPage.as_view(), name='add_page'),
     path('contact/', contact, name='contact'),
