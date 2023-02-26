@@ -282,3 +282,18 @@ ssh localhost -p222  # запуск Docker в SSH
 # Lesson 26 - Deloy
 pip freeze > requirements.txt  # запись версий всех установленных пакетов в файл
 pip install django mysqlclient
+python manage.py collectstatic
+ls -l public  # проверка символьной ссылки
+unlink public  # удаление символьной ссылки
+# из папки public_html:
+ln -s ../valveadvisor/static static
+ln -s ../valveadvisor/media media
+
+# Вариант 2 для Джанго 4+:
+# Для django 4.0+ этот кусок кода не работал вместо этого надо использовать from django.views.static import serve as mediaserve
+# from django.urls import re_path, а далее внизу urlpatterns += [
+#         re_path(f'^{settings.MEDIA_URL.lstrip("/")}(?P<path>.*)$',
+#             mediaserve, {'document_root': settings.MEDIA_ROOT}),
+#         re_path(f'^{settings.STATIC_URL.lstrip("/")}(?P<path>.*)$',
+#             mediaserve, {'document_root': settings.STATIC_ROOT}),
+#     ]
