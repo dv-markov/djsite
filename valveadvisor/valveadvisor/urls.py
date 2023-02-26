@@ -26,6 +26,7 @@ urlpatterns = [
     # path('women', index),  # http://127.0.0.1:8000/women/
     # path('cats/', categories),  # http://127.0.0.1:8000/cats/
     # path('women/', include('women.urls')),
+    path('captcha/', include('captcha.urls')),
     path('', include('women.urls')),
 ]
 

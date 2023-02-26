@@ -37,10 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # отладочная панель Джанго
-    "debug_toolbar",
+    'debug_toolbar',
+    # django-simple-captcha
+    'captcha',
     # регистрировать приложение нужно именно с использованием apps.WomenConfig
     'women.apps.WomenConfig'
-
 ]
 
 MIDDLEWARE = [
@@ -156,3 +157,7 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'va_cache'),
     }
 }
+
+# Captcha constants
+CAPTCHA_BACKGROUND_COLOR = '#001100'
+CAPTCHA_FOREGROUND_COLOR = '#fedcba'
