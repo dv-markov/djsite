@@ -8,8 +8,9 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 # render - встроенный шаблонизатор Django
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, FormView
+from django.views.generic import ListView, DetailView, CreateView, FormView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 
 from .forms import *
 from .models import *
@@ -73,17 +74,26 @@ class WomenHome(DataMixin, ListView):
 
 
 # @login_required # для функций представления используются декораторы, для классов - миксины
-def about(request):
-    # Класс Paginator в функциях-представлениях
-    # contact_list = Women.objects.all()
-    # paginator = Paginator(contact_list, 3)
-    #
-    # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
-    #
-    # return render(request, 'women/about.html', {'page_obj': page_obj, 'menu': menu, 'title': 'О сайте'})
+# def about(request):
+#     # Класс Paginator в функциях-представлениях
+#     # contact_list = Women.objects.all()
+#     # paginator = Paginator(contact_list, 3)
+#     #
+#     # page_number = request.GET.get('page')
+#     # page_obj = paginator.get_page(page_number)
+#     #
+#     # return render(request, 'women/about.html', {'page_obj': page_obj, 'menu': menu, 'title': 'О сайте'})
+#
+#     return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
 
-    return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
+
+class AboutSite(DataMixin, TemplateView):
+    template_name = 'women/about.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="О сайте", cat_selected=None)
+        return context | c_def
 
 
 # Функция
@@ -157,6 +167,11 @@ class ContactFormView(DataMixin, FormView):
 
     def form_valid(self, form):
         print(form.cleaned_data)
+        # send_mail('Тема сообщения',
+        #           'Содержание',
+        #           'basmuleb@gmail.com',
+        #           ['dmitry.v.markov@gmail.com']
+        #           )
         return redirect('home')
 
 

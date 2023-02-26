@@ -164,3 +164,6 @@ CACHES = {
 # Captcha constants
 CAPTCHA_BACKGROUND_COLOR = '#001100'
 CAPTCHA_FOREGROUND_COLOR = '#fedcba'
+
+# EMAIL
+
