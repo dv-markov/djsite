@@ -279,3 +279,5 @@ cache.clear()  # полная очистка кэша
 # Lesson 25 - Deploy
 ssh localhost -p222  # запуск Docker в SSH
 
+# Lesson 26 - Deloy
+pip freeze > requirements.txt  # запись версий всех установленных пакетов в файл
