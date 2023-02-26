@@ -297,3 +297,9 @@ ln -s ../valveadvisor/media media
 #         re_path(f'^{settings.STATIC_URL.lstrip("/")}(?P<path>.*)$',
 #             mediaserve, {'document_root': settings.STATIC_ROOT}),
 #     ]
+
+# Дамп базы данных
+python -Xutf8 manage.py dumpdata --exclude auth.permission --exclude contenttypes > db.json
+
+# Загрузка данных из БД
+python manage.py loaddata db.json

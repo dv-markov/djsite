@@ -167,11 +167,16 @@ class ContactFormView(DataMixin, FormView):
 
     def form_valid(self, form):
         print(form.cleaned_data)
-        # send_mail('Тема сообщения',
-        #           'Содержание',
-        #           'basmuleb@gmail.com',
-        #           ['dmitry.v.markov@gmail.com']
-        #           )
+        name = form.cleaned_data.get('name')
+        email = form.cleaned_data.get('email')
+        msg = form.cleaned_data.get('content')
+        print(name, email, msg)
+        send_mail(f'Valveadvisor: Feedback from {name}',
+                  f'{msg} \n\nContact email: {email}',
+                  'valveadvisor@gmail.com',
+                  ['dmitry.v.markov@gmail.com']
+                  )
+
         return redirect('home')
 
 

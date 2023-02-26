@@ -139,3 +139,4 @@ GitHub.sublime-settings
 .idea/
 /valveadvisor/va_cache/
 /valveadvisor/static/
+/valveadvisor/db.json

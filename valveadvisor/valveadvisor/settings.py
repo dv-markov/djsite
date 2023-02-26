@@ -166,4 +166,8 @@ CAPTCHA_BACKGROUND_COLOR = '#001100'
 CAPTCHA_FOREGROUND_COLOR = '#fedcba'
 
 # EMAIL
-
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'valveadvisor@gmail.com'
+EMAIL_HOST_PASSWORD = 'arcvsksogtbiwisv'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
