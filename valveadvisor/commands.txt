@@ -281,3 +281,4 @@ ssh localhost -p222  # запуск Docker в SSH
 
 # Lesson 26 - Deloy
 pip freeze > requirements.txt  # запись версий всех установленных пакетов в файл
+pip install django mysqlclient
